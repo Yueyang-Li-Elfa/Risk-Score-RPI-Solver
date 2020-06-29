@@ -164,16 +164,14 @@ poi <- poi %>%
 # Risk Score: Joining the data, and calculate the risk scores
 # ----------------------------------------------------
 
-# Read in data
-# POI / open hours
-poi <- read_csv("Data/poi_extended.csv")
+# Read in data: open hours
 open_hours <- read_csv("Data/poi_hour_imputed.csv")
 
 # Joining the data
 # (will be modified after we include the infection rate data in this script)
 risk <- open_hours %>%
   # Join the poi data
-  left_join(poi %>% select(safegraph_place_id, location_name, top_category, latitude, longitude, street_address, area_square_feet, community, city, infection_rate), 
+  left_join(poi %>% select(safegraph_place_id, location_name, top_category, latitude, longitude, street_address, area_square_feet, infection_rate), 
             by = c("safegraph_place_id")) %>%
   # Join daily visits data
   # For those with open_hours = 0 but still have visitis, adjust the open_hours to median level
@@ -232,7 +230,7 @@ risk <- risk %>%
 
 # Reorder columns
 risk <- risk %>%
-  select(safegraph_place_id, location_name, top_category, latitude, longitude, street_address, community, city, everything())
+  select(safegraph_place_id, location_name, top_category, latitude, longitude, street_address, everything())
 
 # Save the file
 write_csv(risk, str_c("Risk Score/risk_score_", Sys.Date(), "updated.csv"))
