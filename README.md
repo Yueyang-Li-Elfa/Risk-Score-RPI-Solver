@@ -1,7 +1,8 @@
 # Risk-Score-RPI-Solver
 Solution for the COVID-19 Challenge co-hosted by the City of Los Angeles and RMDS Lab. Publish risk scores for over 30,000 locations in the City of Los Angeles and nearby commmunities. Keep updating.
 
-Use risk_score_pipeline_function.r to update risk scores.
+Currently using risk_score_pipeline_function.r to update risk scores.
+(The r package "COVIDrisk" is on the way)
 
 Before you run the pipeline script, please make sure to set the [Working Directory] as where the script is located
 
