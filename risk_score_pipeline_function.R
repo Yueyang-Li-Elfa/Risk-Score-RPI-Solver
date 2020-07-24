@@ -1,5 +1,5 @@
 # Pipeline: Generate Risk Scores
-# Updated on Jul 12
+# Updated on Jul 20
 
 # Before you run the script
 # please make sure to set the [Working Directory] as where the script is located
@@ -21,9 +21,9 @@ library(stringr)
 library(tidyr)
 library(sjmisc)
 
-date1 <- "06-15"
-date2 <- "06-22"
-date3 <- "06-29"
+date1 <- "06-22"
+date2 <- "06-29"
+date3 <- "07-06"
 
 # ====================================================
 # Weekly Pattern: Subset POIs in LA 
@@ -148,11 +148,11 @@ hourly_process <- function(file_1 = weekly1, file_2 = weekly2, file_3 = weekly3)
 ## testing_table: the community testing table downloaded from http://dashboard.publichealth.lacounty.gov/covid19_surveillance_dashboard/
 
 calculate_infection_rate <- function(poi_data = poi, 
-                                     case_daath_table = case_daath_table,
+                                     case_death_table = case_death_table,
                                      testing_table = testing_table) {
   
   # Calculate infection rate for each community
-  rate_original <- case_daath_table %>% 
+  rate_original <- case_death_table %>% 
     left_join(testing_table, by = c("geo_merge")) 
   
   rate <- rate_original %>%
@@ -291,7 +291,7 @@ weekly3 <- read_weeklypattern(date3)
 gc()
 
 # Read in infection rate table, poi data, open hours data
-case_daath_table <- read_csv("Data/LA_County_Covid19_CSA_case_death_table.csv")
+case_death_table <- read_csv("Data/LA_County_Covid19_CSA_case_death_table.csv")
 testing_table <- read_csv("Data/LA_County_Covid19_CSA_testing_table.csv")
 poi <- read_csv("Data/poi_extended.csv")
 open_hours <- read_csv("Data/poi_hour_imputed.csv")
@@ -301,7 +301,7 @@ daily <- daily_process(weekly1, weekly2, weekly3)
 hourly <- hourly_process(weekly1, weekly2, weekly3)
 
 # Calculate the infection rate for each community
-poi <- calculate_infection_rate(poi, case_daath_table, testing_table)
+poi <- calculate_infection_rate(poi, case_death_table, testing_table)
 
 # Calculate the risk scores
 risk <- calculate_risk_score(poi, open_hours, daily, hourly)
@@ -314,6 +314,6 @@ risk <- calculate_risk_score(poi, open_hours, daily, hourly)
 # ----------------------------------------------------
 
 # Save the file
-write_csv(risk, str_c("Risk Score/risk_score_", Sys.Date(), "updated.csv"))
+write_csv(risk %>% select(-safegraph_place_id), str_c("Risk Score/risk_score_", Sys.Date(), "updated.csv"))
 #write_csv(risk %>% filter(!is.na(risk_score)), str_c("Risk Score/risk_score_", Sys.Date(), "updated_NA_deleted.csv"))
 # ====================================================
